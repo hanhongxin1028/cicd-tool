@@ -1,0 +1,7 @@
+# CI/CD 自动化工具依赖包
+PyYAML==6.0.3
+paramiko==4.0.0
+rich==14.2.0
+typer==0.20.0
+InquirerPy==0.3.4
+python-dotenv==1.2.1

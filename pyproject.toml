@@ -1,0 +1,56 @@
+[build-system]
+# 使用标准的 setuptools 构建系统
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cicd-tool"  # 项目包名（pip install 用的名字，可修改）
+version = "0.1.0"
+description = "A modern, client-server CI/CD automation tool."
+readme = "README.md"
+requires-python = ">=3.10"
+
+# 🟢 1. 核心依赖 (Client 和 Server 都会用到的)
+# ----------------------------------------------------
+dependencies = [
+    "typer[all]>=0.9.0",   # 现代化的命令行框架
+    "rich>=13.0.0",        # 漂亮的终端输出 (颜色、表格、进度条)
+    "pyyaml>=6.0",         # 解析 cicd-config.yaml
+    "pydantic>=2.0.0",     # 强类型配置验证 (建议加上，提升健壮性)
+    "python-dotenv>=1.0.0" # 加载环境变量
+]
+
+# 🟡 2. 分端依赖
+# ----------------------------------------------------
+[project.optional-dependencies]
+# 客户端专用: pip install -e ".[client]"
+client = [
+    "inquirerpy>=0.3.4",   # 交互式向导 (上下键选择 Feat/Fix)
+    "paramiko>=3.3.0",     # SSH 客户端 (连接服务器用)
+    "scp>=0.14.0"          # 文件传输工具
+]
+
+# 服务端专用: pip install -e ".[server]"
+server = [
+    # 如果服务端需要操作 Docker 或运行 WSGI 服务，可以在这里加
+    # "docker>=6.0.0",
+    # "gunicorn>=20.0.0"
+]
+
+
+# 🔴 3. 命令入口注册 (最关键的部分)
+# 格式: 命令名 = "包路径.模块名:函数名"
+# ----------------------------------------------------
+
+[project.scripts]
+# 客户端入口
+cicd = "cicd.client.cli:app"
+
+# 服务端入口
+cicd-runner = "cicd.server.runner:app"
+
+# 🔵 4. 代码目录配置
+# ----------------------------------------------------
+[tool.setuptools.packages.find]
+where = ["src"]  # 代码必须放在 src/ 目录下
+include = ["cicd*"] # 你的包文件夹名字
